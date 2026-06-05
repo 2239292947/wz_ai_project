@@ -1,0 +1,87 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "logo 万能导入 ZTOCC SMART IMPORT" [ref=e4] [cursor=pointer]:
+        - /url: /import
+        - img "logo" [ref=e7]
+        - generic [ref=e8]:
+          - text: 万能导入
+          - generic [ref=e9]: ZTOCC SMART IMPORT
+      - generic [ref=e10]:
+        - link "导入文件" [ref=e11] [cursor=pointer]:
+          - /url: /import
+          - img [ref=e13]
+          - generic [ref=e15]: 导入文件
+        - link "数据预览" [ref=e17] [cursor=pointer]:
+          - /url: /preview
+          - img [ref=e18]
+          - generic [ref=e20]: 数据预览
+        - link "运单列表" [ref=e21] [cursor=pointer]:
+          - /url: /orders
+          - img [ref=e22]
+          - generic [ref=e24]: 运单列表
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - paragraph [ref=e28]: 多模板自动识别与导入下单系统 — 支持 .xlsx / .xls 文件
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - heading "使用说明" [level=3] [ref=e31]:
+            - img [ref=e32]
+            - text: 使用说明
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: "1"
+              - generic [ref=e37]:
+                - paragraph [ref=e38]: 上传文件
+                - paragraph [ref=e39]: 拖拽或点击选择 Excel 文件
+            - generic [ref=e40]:
+              - generic [ref=e41]: "2"
+              - generic [ref=e42]:
+                - paragraph [ref=e43]: 自动识别
+                - paragraph [ref=e44]: 系统智能匹配列映射，支持手动调整
+            - generic [ref=e45]:
+              - generic [ref=e46]: "3"
+              - generic [ref=e47]:
+                - paragraph [ref=e48]: 预览编辑
+                - paragraph [ref=e49]: 检查数据，修正异常行
+            - generic [ref=e50]:
+              - generic [ref=e51]: "4"
+              - generic [ref=e52]:
+                - paragraph [ref=e53]: 提交下单
+                - paragraph [ref=e54]: 一键批量提交，实时查看进度
+        - generic [ref=e56] [cursor=pointer]:
+          - img [ref=e60]
+          - generic [ref=e62]:
+            - paragraph [ref=e63]: 拖拽 Excel 文件到此处，或点击选择文件
+            - paragraph [ref=e64]: 支持 .xlsx / .xls 格式，单次最大 50MB
+            - generic:
+              - generic [ref=e65]:
+                - img [ref=e66]
+                - text: 智能识别表头
+              - generic [ref=e68]:
+                - img [ref=e69]
+                - text: 自动记忆映射
+              - generic [ref=e71]:
+                - img [ref=e72]
+                - text: 批量验证去重
+        - generic [ref=e74]:
+          - heading "支持的字段映射" [level=3] [ref=e75]:
+            - img [ref=e76]
+            - text: 支持的字段映射
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - generic [ref=e81]: 外部编码
+              - generic [ref=e82]: (选填)
+            - generic [ref=e85]: 发件人姓名
+            - generic [ref=e88]: 发件人电话
+            - generic [ref=e91]: 发件人地址
+            - generic [ref=e94]: 收件人姓名
+            - generic [ref=e97]: 收件人电话
+            - generic [ref=e100]: 收件人地址
+            - generic [ref=e103]: 重量(kg)
+            - generic [ref=e106]: 件数
+            - generic [ref=e109]: 温层
+            - generic [ref=e110]:
+              - generic [ref=e112]: 备注
+              - generic [ref=e113]: (选填)
+  - alert [ref=e114]

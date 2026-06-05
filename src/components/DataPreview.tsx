@@ -147,32 +147,38 @@ export function DataPreview({
   }));
 
   return (
-    <div className="space-y-4 fade-in">
+    <div className="space-y-4 animate-fadeIn">
       {/* Parse Errors/Warnings */}
       {parseErrors.length > 0 && (
-        <div className="p-4 bg-error-bg border border-red-200 rounded-xl">
-          <p className="font-medium text-error mb-1">解析错误：</p>
+        <div className="p-4 bg-red-50/90 border border-red-200/60 rounded-xl backdrop-blur-sm">
+          <p className="font-medium text-red-500 mb-1 flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            解析错误：
+          </p>
           {parseErrors.map((e, i) => (
-            <p key={i} className="text-sm text-error">{e}</p>
+            <p key={i} className="text-sm text-red-500">{e}</p>
           ))}
         </div>
       )}
       {parseWarnings.length > 0 && (
-        <div className="p-4 bg-warning-bg border border-orange-200 rounded-xl">
-          <p className="font-medium text-warning mb-1">警告：</p>
+        <div className="p-4 bg-amber-50/90 border border-amber-200/60 rounded-xl backdrop-blur-sm">
+          <p className="font-medium text-amber-600 mb-1 flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            警告：
+          </p>
           {parseWarnings.map((w, i) => (
-            <p key={i} className="text-sm text-warning">{w}</p>
+            <p key={i} className="text-sm text-amber-600">{w}</p>
           ))}
         </div>
       )}
 
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-border p-4">
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-slate-200/60 p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-semibold text-text">数据预览</h2>
-            <span className="text-sm text-text-muted">
-              共 {editedRows.length} 条 · {errorCount > 0 && <span className="text-error">{errorCount} 条错误</span>}
+            <h2 className="text-lg font-semibold text-slate-800">数据预览</h2>
+            <span className="text-sm text-slate-400">
+              共 {editedRows.length} 条 · {errorCount > 0 && <span className="text-red-500">{errorCount} 条错误</span>}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -181,17 +187,17 @@ export function DataPreview({
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
               placeholder="搜索..."
-              className="px-3 py-1.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary w-48"
+              className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus-ring w-48 bg-white/80"
             />
             <button
               onClick={handleAddRow}
-              className="px-3 py-1.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary-light transition-colors"
+              className="px-3 py-1.5 border border-primary/30 text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-all duration-200"
             >
               + 新增行
             </button>
             <button
               onClick={handleExportExcel}
-              className="px-3 py-1.5 border border-border text-text-secondary rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+              className="px-3 py-1.5 border border-slate-200 text-slate-500 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors duration-200"
             >
               导出Excel
             </button>
@@ -200,19 +206,19 @@ export function DataPreview({
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-slate-200/60 overflow-hidden shadow-sm">
         <div ref={parentRef} className="overflow-auto" style={{ height: Math.min(600, Math.max(300, editedRows.length * 40 + 50)) }}>
           <table className="data-table w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="px-3 py-2.5 text-left whitespace-nowrap border-b border-border w-12">#</th>
+                <th className="px-3 py-2.5 text-left whitespace-nowrap border-b border-slate-200/60 w-12">#</th>
                 {columns.map(col => (
-                  <th key={col.key} className="px-3 py-2.5 text-left whitespace-nowrap border-b border-border" style={{ minWidth: col.width }}>
+                  <th key={col.key} className="px-3 py-2.5 text-left whitespace-nowrap border-b border-slate-200/60" style={{ minWidth: col.width }}>
                     {col.label}
-                    {col.required && <span className="text-error ml-0.5">*</span>}
+                    {col.required && <span className="text-red-400 ml-0.5">*</span>}
                   </th>
                 ))}
-                <th className="px-3 py-2.5 text-center whitespace-nowrap border-b border-border w-16">操作</th>
+                <th className="px-3 py-2.5 text-center whitespace-nowrap border-b border-slate-200/60 w-16">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -223,15 +229,15 @@ export function DataPreview({
                 return (
                   <tr
                     key={row._rowId}
-                    className={`border-b border-border/50 hover:bg-gray-50/50 ${
-                      row._isNew ? 'bg-primary-light/30' : ''
+                    className={`border-b border-slate-100/50 hover:bg-slate-50/50 transition-colors duration-150 ${
+                      row._isNew ? 'bg-primary/5' : ''
                     }`}
                     style={{
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                     }}
                   >
-                    <td className="px-3 py-2 text-text-muted text-xs">{virtualRow.index + 1}</td>
+                    <td className="px-3 py-2 text-slate-400 text-xs">{virtualRow.index + 1}</td>
                     {columns.map(col => {
                       const hasError = !!row._errors[col.key];
                       const value = row[col.key as keyof FlatOrderRow];
@@ -245,8 +251,8 @@ export function DataPreview({
                             type={col.key === 'quantity' ? 'number' : 'text'}
                             value={value === undefined ? '' : String(value)}
                             onChange={e => handleCellEdit(row._rowId, col.key, e.target.value)}
-                            className={`w-full px-2 py-1 rounded text-sm border-0 bg-transparent focus:bg-white focus:ring-1 focus:ring-primary/30 focus:outline-none ${
-                              hasError ? 'bg-error-bg ring-1 ring-error/30' : ''
+                            className={`w-full px-2 py-1 rounded text-sm border-0 bg-transparent focus:bg-white focus:ring-1 focus:ring-primary/30 focus:outline-none transition-colors duration-150 ${
+                              hasError ? 'bg-red-50 ring-1 ring-red-300/30' : ''
                             }`}
                           />
                         </td>
@@ -255,7 +261,7 @@ export function DataPreview({
                     <td className="px-2 py-1 text-center">
                       <button
                         onClick={() => handleDeleteRow(row._rowId)}
-                        className="text-xs text-error hover:text-error/70 transition-colors"
+                        className="text-xs text-red-400 hover:text-red-500 transition-colors duration-200"
                       >
                         删除
                       </button>
@@ -270,13 +276,16 @@ export function DataPreview({
 
       {/* Error Summary */}
       {errorCount > 0 && (
-        <div className="p-4 bg-error-bg border border-red-200 rounded-xl">
-          <p className="font-medium text-error mb-2">数据校验错误 ({errorCount} 条)：</p>
+        <div className="p-4 bg-red-50/90 border border-red-200/60 rounded-xl backdrop-blur-sm">
+          <p className="font-medium text-red-500 mb-2 flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            数据校验错误 ({errorCount} 条)：
+          </p>
           <div className="max-h-40 overflow-y-auto space-y-1">
             {editedRows
               .filter(r => Object.keys(r._errors).length > 0)
               .map(row => (
-                <div key={row._rowId} className="text-sm text-error">
+                <div key={row._rowId} className="text-sm text-red-500">
                   第 {editedRows.indexOf(row) + 1} 行: {Object.entries(row._errors)
                     .map(([field, msg]) => `${TARGET_FIELDS.find(f => f.key === field)?.label || field} ${msg}`)
                     .join('；')}
@@ -290,14 +299,14 @@ export function DataPreview({
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="px-5 py-2 text-text-secondary hover:text-text transition-colors"
+          className="px-5 py-2 text-slate-400 hover:text-slate-700 transition-colors duration-200"
         >
           ← 重新选择规则
         </button>
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || errorCount > 0}
-          className="px-8 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          className="btn-premium px-8 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           {isSubmitting ? (
             <>
@@ -315,11 +324,11 @@ export function DataPreview({
 
       {/* Submit Progress */}
       {isSubmitting && (
-        <div className="mt-2">
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary rounded-full progress-pulse" style={{ width: '60%' }} />
+        <div className="mt-2 animate-fadeIn">
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-primary to-primary-dark rounded-full progress-pulse" style={{ width: '60%' }} />
           </div>
-          <p className="text-sm text-text-muted mt-1 text-center">正在提交订单数据...</p>
+          <p className="text-sm text-slate-400 mt-1 text-center">正在提交订单数据...</p>
         </div>
       )}
     </div>
