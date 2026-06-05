@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ParseRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  config      Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  externalCode  String?
+  storeName     String?
+  receiverName  String?
+  receiverPhone String?
+  receiverAddress String?
+  batchId       String
+  status        String      @default("pending")
+  createdAt     DateTime    @default(now())
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  skuCode   String
+  skuName   String
+  quantity  Int
+  spec      String?
+  remark    String?
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}

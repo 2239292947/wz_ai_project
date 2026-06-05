@@ -9,18 +9,28 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@prisma/client": "^6.19.3",
+    "@tanstack/react-virtual": "^3.14.2",
+    "autoprefixer": "^10.5.0",
+    "mammoth": "^1.12.0",
+    "next": "^14.2.30",
+    "openai": "^6.42.0",
+    "pdf-parse": "^2.2.2",
+    "pdf2json": "^3.1.4",
+    "postcss": "^8.5.15",
+    "prisma": "^6.19.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18.3.30",
+    "@types/react-dom": "^18.3.7",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "tailwindcss": "^4",
+    "eslint-config-next": "^14.2.30",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5"
   }
 }
