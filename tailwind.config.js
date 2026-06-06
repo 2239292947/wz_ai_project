@@ -9,10 +9,10 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#07BEBF',
-          dark: '#059A9B',
-          light: '#07BEBF14',
-          glow: '#07BEBF26',
+          DEFAULT: '#0fc6c2',
+          dark: '#0bada9',
+          light: '#0fc6c214',
+          glow: '#0fc6c226',
         },
         bg: '#f8fafc',
         card: '#ffffff',
@@ -55,7 +55,7 @@ module.exports = {
         'xl': '0 20px 25px -5px #00000014, 0 8px 10px -6px #0000000a',
         '2xl': '0 25px 50px -12px #00000026',
         'inner': 'inset 0 1px 3px #0000000f',
-        'glow': '0 0 0 3px #07BEBF26',
+        'glow': '0 0 0 3px #0fc6c226',
       },
       transitionTimingFunction: {
         'spring': 'cubic-bezier(.34, 1.56, .64, 1)',
@@ -100,8 +100,8 @@ module.exports = {
           '50%': { transform: 'translateY(-6px)' },
         },
         glow: {
-          '0%, 100%': { boxShadow: '0 0 5px #07BEBF26' },
-          '50%': { boxShadow: '0 0 20px #07BEBF26, 0 0 40px #07bebf1a' },
+          '0%, 100%': { boxShadow: '0 0 5px #0fc6c226' },
+          '50%': { boxShadow: '0 0 20px #0fc6c226, 0 0 40px #07bebf1a' },
         },
         gradientShift: {
           '0%': { backgroundPosition: '0% center' },
@@ -113,8 +113,8 @@ module.exports = {
           '100%': { backgroundPosition: '200% 0' },
         },
         borderGlow: {
-          '0%, 100%': { borderColor: '#07BEBF', boxShadow: '0 0 8px #07BEBF26' },
-          '50%': { borderColor: '#059A9B', boxShadow: '0 0 16px #07BEBF26' },
+          '0%, 100%': { borderColor: '#0fc6c2', boxShadow: '0 0 8px #0fc6c226' },
+          '50%': { borderColor: '#0bada9', boxShadow: '0 0 16px #0fc6c226' },
         },
       },
     },

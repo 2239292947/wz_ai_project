@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --primary: #07BEBF;
-  --primary-dark: #059A9B;
-  --primary-light: #07BEBF14;
-  --primary-glow: #07BEBF26;
+  --primary: #0fc6c2;
+  --primary-dark: #0bada9;
+  --primary-light: #0fc6c214;
+  --primary-glow: #0fc6c226;
   --bg: #f8fafc;
   --card: #ffffff;
   --text: #0f172a;
@@ -100,7 +100,7 @@ html {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #07BEBF 0%, #059A9B 100%);
+  background: linear-gradient(135deg, #0fc6c2 0%, #0bada9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -257,4 +257,25 @@ html {
 .data-table td.error-cell {
   background: var(--error-bg) !important;
   color: var(--error);
+}
+
+/* Keyframe animations */
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }

@@ -53,41 +53,35 @@ async function readWord(buffer: Buffer): Promise<Record<string, string[][]>> {
 
 async function readPdf(buffer: Buffer): Promise<Record<string, string[][]>> {
   try {
-    // Use pdf2json which works in Node.js without DOMMatrix
     const pdf2jsonModule = await import('pdf2json');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const PDFParserClass = (pdf2jsonModule as any).default || pdf2jsonModule;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pdfParser = new (PDFParserClass as any)(null, 1);
 
     return new Promise<Record<string, string[][]>>((resolve, reject) => {
       pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
-        // Merge all pages into a single sheet for easier parsing
         const allRows: string[][] = [];
-        let headerFound = false;
-        let headerRowIndex = -1;
-        const headerColumns: string[] = [];
+        let headerXPositions: number[] = [];
 
         for (let p = 0; p < pdfData.Pages.length; p++) {
           const page = pdfData.Pages[p];
-          // Group texts by Y position to reconstruct rows
-          const rowMap = new Map<number, { x: number; text: string }[]>();
-
+          // Collect all text items with their positions
+          const textItems: { x: number; y: number; text: string }[] = [];
           for (const text of page.Texts) {
-            const yKey = Math.round(text.y * 2) / 2; // round to 0.5
             const content = decodeURIComponent(
               text.R.map((r: any) => r.T).join('')
             ).trim();
             if (!content) continue;
-
-            if (!rowMap.has(yKey)) {
-              rowMap.set(yKey, []);
-            }
-            rowMap.get(yKey)!.push({ x: text.x, text: content });
+            textItems.push({ x: text.x, y: text.y, text: content });
           }
 
-          // Sort by Y, then within each row sort by X
+          // Group by Y position to form rows
+          const rowMap = new Map<number, { x: number; text: string }[]>();
+          for (const item of textItems) {
+            const yKey = Math.round(item.y * 2) / 2;
+            if (!rowMap.has(yKey)) rowMap.set(yKey, []);
+            rowMap.get(yKey)!.push({ x: item.x, text: item.text });
+          }
+
           const sortedYs = Array.from(rowMap.keys()).sort((a, b) => a - b);
           const pageRows: string[][] = [];
 
@@ -95,82 +89,136 @@ async function readPdf(buffer: Buffer): Promise<Record<string, string[][]>> {
             const cells = rowMap.get(y)!;
             cells.sort((a, b) => a.x - b.x);
 
-            // Group cells into columns based on X position gaps
-            const columns: string[] = [];
-            let currentCol = '';
-            let lastEndX = -1;
-
-            for (let ci = 0; ci < cells.length; ci++) {
-              const cell = cells[ci];
-              const prevEndX = lastEndX;
-              const gap = prevEndX >= 0 ? cell.x - prevEndX : 999;
-
-              if (gap > 1.5) {
-                if (currentCol) columns.push(currentCol);
-                currentCol = cell.text;
-              } else {
-                currentCol += (gap > 0.3 ? ' ' : '') + cell.text;
+            if (headerXPositions.length > 0) {
+              // Use header column X positions to align cells into columns
+              const columns: string[] = new Array(headerXPositions.length).fill('');
+              for (const cell of cells) {
+                let bestCol = 0;
+                let bestDist = Infinity;
+                for (let c = 0; c < headerXPositions.length; c++) {
+                  const dist = Math.abs(cell.x - headerXPositions[c]);
+                  if (dist < bestDist) {
+                    bestDist = dist;
+                    bestCol = c;
+                  }
+                }
+                if (bestDist < 8) {
+                  columns[bestCol] = columns[bestCol]
+                    ? columns[bestCol] + ' ' + cell.text
+                    : cell.text;
+                } else {
+                  // New column beyond header - append
+                  columns.push(cell.text);
+                }
               }
-
-              lastEndX = cell.x + cell.text.length * 0.28;
-            }
-            if (currentCol) columns.push(currentCol);
-
-            if (columns.length > 0) {
-              pageRows.push(columns);
+              if (columns.some(c => c !== '')) {
+                pageRows.push(columns);
+              }
+            } else {
+              // No header yet - just separate cells into individual columns
+              const columns = cells.map(c => c.text);
+              if (columns.length > 0) {
+                pageRows.push(columns);
+              }
             }
           }
 
-          // Check if this page has a table header
-          for (const row of pageRows) {
+          // Find header row and capture its X positions
+          for (let ri = 0; ri < pageRows.length; ri++) {
+            const row = pageRows[ri];
             const joinedRow = row.join(' ');
-            // Detect table header patterns for logistics documents
             const isHeaderRow = (
               (joinedRow.includes('物品编码') && joinedRow.includes('物品名称')) ||
               (joinedRow.includes('物品类别') && joinedRow.includes('物品编码'))
             );
 
-            if (isHeaderRow && !headerFound) {
-              headerFound = true;
-              headerRowIndex = allRows.length;
-              // Build header columns from this row
-              for (const cell of row) {
-                headerColumns.push(cell);
-              }
-              allRows.push(row);
-            } else if (!headerFound) {
-              // Before header found, add as info rows
-              allRows.push(row);
-            } else {
-              // After header - these are data rows
-              // Skip "合计" rows and footer info
-              const firstCell = (row[0] || '').toString().trim();
-              if (firstCell.includes('合计') || firstCell.includes('制单日期')) continue;
-              if (firstCell.includes('收货人签字') || firstCell.includes('打印次数')) continue;
+            if (isHeaderRow && headerXPositions.length === 0) {
+              // Get the Y position for this header row
+              const yKey = sortedYs[ri];
+              const headerCells = rowMap.get(yKey) || [];
+              headerCells.sort((a: any, b: any) => a.x - b.x);
+              headerXPositions = headerCells.map((c: any) => c.x);
 
-              // Try to align data row with header columns using X positions
-              // For now, just add as-is and rely on the header row for mapping
-              allRows.push(row);
+              // Re-process pageRows with header alignment
+              pageRows.length = 0;
+              // Re-process all rows for this page with alignment
+              for (const y2 of sortedYs) {
+                const rowCells = rowMap.get(y2)!;
+                rowCells.sort((a, b) => a.x - b.x);
+                const columns: string[] = new Array(headerXPositions.length).fill('');
+                for (const cell of rowCells) {
+                  let bestCol = 0;
+                  let bestDist = Infinity;
+                  for (let c = 0; c < headerXPositions.length; c++) {
+                    const dist = Math.abs(cell.x - headerXPositions[c]);
+                    if (dist < bestDist) {
+                      bestDist = dist;
+                      bestCol = c;
+                    }
+                  }
+                  if (bestDist < 8) {
+                    columns[bestCol] = columns[bestCol]
+                      ? columns[bestCol] + ' ' + cell.text
+                      : cell.text;
+                  } else {
+                    columns.push(cell.text);
+                  }
+                }
+                if (columns.some(c => c !== '')) {
+                  pageRows.push(columns);
+                }
+              }
+              break;
             }
           }
-        }
 
-        // Add tail info rows at the bottom
-        const tailRows: string[][] = [];
-        for (let i = allRows.length - 1; i >= 0; i--) {
-          const row = allRows[i];
-          const joinedRow = (row || []).join(' ');
-          if (joinedRow.includes('收货人') || joinedRow.includes('收货电话') ||
-              joinedRow.includes('收货地址') || joinedRow.includes('备注')) {
-            tailRows.unshift(row);
-            allRows.splice(i, 1);
-          } else {
-            break;
+          // Process page rows
+          for (const row of pageRows) {
+            const joinedRow = row.join(' ');
+            const isHeaderRow = (
+              (joinedRow.includes('物品编码') && joinedRow.includes('物品名称')) ||
+              (joinedRow.includes('物品类别') && joinedRow.includes('物品编码'))
+            );
+
+            // Skip duplicate headers on page 2+
+            if (isHeaderRow && allRows.some(r => r.join(' ').includes('物品编码'))) {
+              continue;
+            }
+
+            const firstCell = (row[0] || '').toString().trim();
+            // Skip summary/total rows
+            if (firstCell.includes('合计') || firstCell === '合' || firstCell === '计') continue;
+            if (firstCell.includes('制单日期') || firstCell.includes('打印次数')) continue;
+            if (firstCell.includes('收货人签字')) continue;
+            if (firstCell.includes('第') && firstCell.includes('页') && firstCell.includes('共')) continue;
+            // Skip empty rows
+            const nonEmpty = row.filter(c => c.trim() !== '');
+            if (nonEmpty.length === 0) continue;
+
+            allRows.push(row);
           }
         }
-        allRows.push(...tailRows);
 
-        resolve({ 'default': allRows });
+        // Move tail info rows (收货人/收货电话/收货地址) to the bottom
+        const tailRows: string[][] = [];
+        const dataRows: string[][] = [];
+        let tailStarted = false;
+
+        for (const row of allRows) {
+          const joinedRow = row.join(' ');
+          if (joinedRow.includes('收货人') || joinedRow.includes('收货电话') ||
+              joinedRow.includes('收货地址') || joinedRow.includes('备注：')) {
+            tailStarted = true;
+          }
+          if (tailStarted) {
+            tailRows.push(row);
+          } else {
+            dataRows.push(row);
+          }
+        }
+
+        const finalRows = [...dataRows, ...tailRows];
+        resolve({ 'default': finalRows });
       });
 
       pdfParser.on('pdfParser_dataError', (errData: any) => {

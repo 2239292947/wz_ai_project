@@ -111,6 +111,11 @@ function parseTabular(rows: string[][], rule: ParseRuleConfig, sheetName: string
     // Only add rows that have at least some data
     const hasData = Object.keys(row).some(k => row[k] && row[k] !== '');
     if (hasData) {
+      // Skip rows that have no SKU code or name (fragment rows from PDF etc)
+      if (!row.skuCode && !row.skuName) continue;
+      // Skip rows where skuCode or skuName contains info markers (likely info rows, not data)
+      if (row.skuCode && /[：:收发联电门仓备注]/.test(row.skuCode)) continue;
+      if (row.skuName && /[：:收发联电门仓备注]/.test(row.skuName)) continue;
       dataRows.push(row);
     }
   }
