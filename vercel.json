@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "prisma generate && (prisma db push --accept-data-loss || echo 'db push skipped') && next build",
+  "buildCommand": "next build",
   "framework": "nextjs",
   "regions": ["sin1"]
 }
