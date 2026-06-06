@@ -37,8 +37,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: rule });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '创建规则失败';
+    console.error('POST /api/rules error:', error);
     return NextResponse.json(
-      { success: false, error: '创建规则失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -68,8 +70,10 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: rule });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '更新规则失败';
+    console.error('PUT /api/rules error:', error);
     return NextResponse.json(
-      { success: false, error: '更新规则失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -91,8 +95,10 @@ export async function DELETE(request: NextRequest) {
     await prisma.parseRule.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '删除规则失败';
+    console.error('DELETE /api/rules error:', error);
     return NextResponse.json(
-      { success: false, error: '删除规则失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

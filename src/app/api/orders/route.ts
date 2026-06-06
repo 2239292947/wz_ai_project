@@ -42,8 +42,10 @@ export async function GET(request: NextRequest) {
       data: { orders, total, page, pageSize },
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '获取订单列表失败';
+    console.error('GET /api/orders error:', error);
     return NextResponse.json(
-      { success: false, error: '获取订单列表失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -116,8 +118,10 @@ export async function POST(request: NextRequest) {
       data: { batchId, successCount, failCount, errors },
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '提交订单失败';
+    console.error('POST /api/orders error:', error);
     return NextResponse.json(
-      { success: false, error: '提交订单失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
