@@ -9,8 +9,10 @@ export async function GET() {
     });
     return NextResponse.json({ success: true, data: rules });
   } catch (error) {
+    const message = error instanceof Error ? error.message : '获取规则列表失败';
+    console.error('GET /api/rules error:', error);
     return NextResponse.json(
-      { success: false, error: '获取规则列表失败' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
